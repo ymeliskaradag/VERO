@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VERO — Yönetim Paneli</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0B1E3D;
+    --teal:#00C2A8;
+    --mist:#F2F3F5;
+    --line:#E4E7EC;
+    --slate:#5B6B7F;
+    --ink:#0B1E3D;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'IBM Plex Sans', sans-serif;
+    background:var(--mist);
+    color:var(--ink);
+  }
+
+  /* ---- top bar ------------------------------------------------------ */
+  .topbar{
+    background:var(--navy);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px clamp(20px,5vw,56px);
+  }
+  .topbar .brand{display:flex; align-items:center; gap:10px;}
+  .topbar .brand svg{width:24px;height:24px;}
+  .topbar .brand span{font-weight:700; letter-spacing:0.1em;}
+  .topbar .label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--teal);
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+  }
+
+  main{padding:clamp(20px,4vw,48px);}
+
+  /* ---- summary strip (F-pattern top row) ----------------------------- */
+  .summary{
+    display:flex;
+    gap:16px;
+    margin-bottom:28px;
+    flex-wrap:wrap;
+  }
+  .summary .card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:16px 20px;
+    min-width:160px;
+  }
+  .summary .card .num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:26px;
+    font-weight:600;
+    color:var(--navy);
+  }
+  .summary .card .lbl{font-size:12.5px; color:var(--slate); margin-top:2px;}
+
+  /* ---- lead table (F-pattern: isim en solda / öncelikli) ------------- */
+  .table-wrap{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    overflow:hidden;
+  }
+  table{width:100%; border-collapse:collapse;}
+  thead th{
+    text-align:left;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--slate);
+    background:#FAFBFC;
+    padding:14px 18px;
+    border-bottom:1px solid var(--line);
+  }
+  tbody td{
+    padding:14px 18px;
+    border-bottom:1px solid var(--line);
+    font-size:14px;
+    vertical-align:top;
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  tbody td.isim{font-weight:600;}
+  td.hizmet .pill{
+    display:inline-block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    padding:3px 9px;
+    border-radius:999px;
+    background:rgba(0,194,168,0.12);
+    color:#067A69;
+  }
+  td.tarih{color:var(--slate); font-family:'IBM Plex Mono', monospace; font-size:12.5px; white-space:nowrap;}
+
+  #bos-durum{
+    display:none;
+    padding:48px 20px;
+    text-align:center;
+    color:var(--slate);
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M4 6 L20 34 L36 6" stroke="#00C2A8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <circle cx="20" cy="30" r="3" fill="#00C2A8"/>
+    </svg>
+    <span>VERO</span>
+  </div>
+  <div class="label">Yönetim Paneli</div>
+</div>
+
+<main>
+  <div class="summary">
+    <div class="card">
+      <div class="num" id="toplam-lead-sayisi">—</div>
+      <div class="lbl">Toplam lead</div>
+    </div>
+    <div class="card">
+      <div class="num" id="yazilim-lead-sayisi">—</div>
+      <div class="lbl">Yazılım Geliştirme</div>
+    </div>
+    <div class="card">
+      <div class="num" id="guvenlik-lead-sayisi">—</div>
+      <div class="lbl">Siber Güvenlik</div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table aria-label="Lead listesi">
+      <thead>
+        <tr>
+          <th>İsim</th>
+          <th>Telefon</th>
+          <th>Hizmet Alanı</th>
+          <th>Mesaj</th>
+          <th>Tarih</th>
+        </tr>
+      </thead>
+      <!-- TODO: GET /api/leads çağrısı yapılacak; dönen 'leadler' dizisi
+           burada bir Repeater (Wix) veya <tbody> satırları (yerel test)
+           olarak listelenecek. Her satırda backend anahtarları birebir
+           kullanılmalı: isim, telefon, hizmet_alani, mesaj, tarih. -->
+      <tbody id="lead-tablosu-govde">
+        <!-- Örnek satır yapısı (JS ile doldurulacak):
+        <tr>
+          <td class="isim">Ad Soyad</td>
+          <td>05xx xxx xx xx</td>
+          <td class="hizmet"><span class="pill">Siber Güvenlik</span></td>
+          <td>Mesaj metni…</td>
+          <td class="tarih">17.08.2026 14:32</td>
+        </tr>
+        -->
+      </tbody>
+    </table>
+    <div id="bos-durum">Henüz lead kaydı yok. Karşılama sayfasındaki form doldurulduğunda burada listelenecek.</div>
+  </div>
+</main>
+
+</body>
+</html>

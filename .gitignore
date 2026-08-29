@@ -1,0 +1,13 @@
+# Ortam ve gizli dosyalar
+.env
+venv/
+__pycache__/
+*.pyc
+
+# Veritabanı
+*.db
+*.sqlite3
+
+# Editör / işletim sistemi
+.vscode/
+.DS_Store

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VERO — Yazılım &amp; Siber Güvenlik Danışmanlığı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0B1E3D;
+    --navy-deep:#071427;
+    --teal:#00C2A8;
+    --mist:#F2F3F5;
+    --ink:#0B1E3D;
+    --slate:#8FA0B8;
+    --glass-bg:rgba(18,38,68,0.46);
+    --glass-border:rgba(255,255,255,0.14);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'IBM Plex Sans', sans-serif;
+    color:var(--mist);
+    background:
+      radial-gradient(circle at 82% 12%, rgba(0,194,168,0.16), transparent 42%),
+      radial-gradient(circle at 8% 88%, rgba(0,194,168,0.08), transparent 38%),
+      linear-gradient(180deg, var(--navy-deep) 0%, var(--navy) 55%, #0E2748 100%);
+    min-height:100vh;
+  }
+
+  /* ---- header / logo ------------------------------------------------ */
+  header{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:32px clamp(20px,5vw,64px) 8px;
+  }
+  .mark{width:34px;height:34px;flex-shrink:0;}
+  .wordmark{
+    font-weight:700;
+    font-size:22px;
+    letter-spacing:0.14em;
+  }
+  .wordmark span{color:var(--teal);}
+
+  /* ---- layout: Z-pattern --------------------------------------------
+     logo (top-left) -> chat card (right) -> lead form (bottom band)   */
+  main{
+    display:grid;
+    grid-template-columns:1.05fr 1fr;
+    gap:40px;
+    padding:24px clamp(20px,5vw,64px) 56px;
+    align-items:start;
+  }
+  @media (max-width:860px){
+    main{grid-template-columns:1fr;}
+  }
+
+  .hero-copy{padding-top:28px;}
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--teal);
+    margin:0 0 14px;
+  }
+  h1{
+    font-size:clamp(30px,4vw,44px);
+    line-height:1.12;
+    margin:0 0 18px;
+    font-weight:600;
+    max-width:15ch;
+  }
+  .hero-copy p{
+    color:var(--slate);
+    font-size:16px;
+    line-height:1.6;
+    max-width:44ch;
+  }
+  .stat-row{display:flex;gap:28px;margin-top:32px;}
+  .stat-row div{font-family:'IBM Plex Mono', monospace;}
+  .stat-row strong{display:block;font-size:20px;color:#fff;}
+  .stat-row span{font-size:12px;color:var(--slate);}
+
+  /* ---- glass chat card ------------------------------------------------ */
+  .chat-card{
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    border-radius:18px;
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    padding:26px;
+    box-shadow:0 24px 60px -20px rgba(0,0,0,0.55);
+  }
+  .chat-card h2{
+    font-size:15px;
+    font-weight:600;
+    margin:0 0 4px;
+  }
+  .chat-card .sub{
+    font-size:13px;
+    color:var(--slate);
+    margin:0 0 18px;
+  }
+  #yanit-alani{
+    min-height:96px;
+    border-radius:12px;
+    background:rgba(0,0,0,0.22);
+    border:1px solid rgba(255,255,255,0.08);
+    padding:14px;
+    font-size:14px;
+    line-height:1.55;
+    color:#E8ECF2;
+    margin-bottom:16px;
+    white-space:pre-wrap;
+  }
+  #yanit-alani:empty::before{
+    content:"VERO Asistanı yanıtı burada görünecek.";
+    color:var(--slate);
+  }
+  textarea#mesaj-girisi{
+    width:100%;
+    resize:vertical;
+    min-height:64px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.14);
+    background:rgba(255,255,255,0.04);
+    color:#fff;
+    padding:12px 14px;
+    font-family:inherit;
+    font-size:14px;
+  }
+  textarea#mesaj-girisi::placeholder{color:var(--slate);}
+
+  .btn{
+    border:none;
+    border-radius:10px;
+    padding:11px 20px;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+    transition:transform .15s ease, opacity .15s ease;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn:focus-visible{outline:2px solid var(--teal); outline-offset:2px;}
+  .btn-primary{background:var(--teal); color:var(--navy-deep);}
+  .btn-primary:hover{opacity:.92;}
+
+  #sor-butonu{margin-top:12px;width:100%;}
+
+  hr.divider{
+    border:none;
+    border-top:1px solid rgba(255,255,255,0.12);
+    margin:22px 0;
+  }
+
+  /* ---- lead form -------------------------------------------------- */
+  form#lead-formu label{
+    display:block;
+    font-size:12px;
+    color:var(--slate);
+    margin:0 0 6px;
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;}
+  @media (max-width:480px){.field-row{grid-template-columns:1fr;}}
+  input#isim-girisi, input#telefon-girisi, select#hizmet-alani-secimi{
+    width:100%;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,0.14);
+    background:rgba(255,255,255,0.04);
+    color:#fff;
+    padding:10px 12px;
+    font-family:inherit;
+    font-size:14px;
+  }
+  select#hizmet-alani-secimi{margin-bottom:14px;}
+  #kaydet-butonu{width:100%;}
+
+  footer{
+    text-align:center;
+    font-size:12px;
+    color:var(--slate);
+    padding:0 20px 32px;
+    font-family:'IBM Plex Mono', monospace;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <svg class="mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <!-- Logo işareti: 'V' harfinin kalkan/kilit formuna yorumlanmış hali -->
+    <path d="M4 6 L20 34 L36 6" stroke="#00C2A8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="20" cy="30" r="3" fill="#00C2A8"/>
+  </svg>
+  <div class="wordmark">VERO<span>.</span></div>
+</header>
+
+<main>
+  <section class="hero-copy">
+    <p class="eyebrow">Yazılım · Siber Güvenlik · Danışmanlık</p>
+    <h1>Gerçek uzmanlık, dijital hızla yanınızda.</h1>
+    <p>
+      VERO, markalara ve bireylere yönelik yazılım geliştirme ve siber
+      güvenlik danışmanlığı sunar. Aşağıdaki asistana ihtiyacınızı
+      anlatın — size uygun çözümü ve sonraki adımı birlikte
+      belirleyelim.
+    </p>
+    <div class="stat-row">
+      <div><strong>7/24</strong><span>Dijital destek</span></div>
+      <div><strong>18+</strong><span>Bireysel &amp; kurumsal</span></div>
+      <div><strong>%100</strong><span>Uzaktan / dijital</span></div>
+    </div>
+  </section>
+
+  <section class="chat-card" aria-label="VERO Asistanı sohbet alanı">
+    <h2>VERO Asistanı'na Sor</h2>
+    <p class="sub">Sorunuzu yazın, saniyeler içinde yanıt alın.</p>
+
+    <div id="yanit-alani" role="status" aria-live="polite"></div>
+
+    <textarea id="mesaj-girisi" placeholder="Örn: Uygulamamı yayınlamadan önce güvenlik denetimi yaptırmak istiyorum..."></textarea>
+    <button class="btn btn-primary" id="sor-butonu" type="button">Sor</button>
+    <!-- TODO: wix-fetch / fetch ile POST /api/sohbet çağrısı buraya bağlanacak.
+         Gönderilecek alan: mesaj (ve varsa gecmis). Dönen 'cevap' alanı
+         #yanit-alani içine yazdırılmalı. -->
+
+    <hr class="divider">
+
+    <form id="lead-formu">
+      <label for="isim-girisi">Bize ulaşın</label>
+      <div class="field-row">
+        <input id="isim-girisi" type="text" placeholder="Ad Soyad" required>
+        <input id="telefon-girisi" type="tel" placeholder="Telefon" required>
+      </div>
+      <select id="hizmet-alani-secimi">
+        <option value="Yazılım Geliştirme">Yazılım Geliştirme</option>
+        <option value="Siber Güvenlik">Siber Güvenlik</option>
+        <option value="İkisi de">İkisi de</option>
+      </select>
+      <button class="btn btn-primary" id="kaydet-butonu" type="submit">Kaydet</button>
+      <!-- TODO: submit olayında POST /api/leads çağrısı yapılacak.
+           Gönderilecek alanlar: isim, telefon, mesaj, hizmet_alani
+           (backend ile birebir aynı adlar — Proje Yönergesi "KRİTİK" notu). -->
+    </form>
+  </section>
+</main>
+
+<footer>VERO © 2026 — vero.wixsite.com/vero</footer>
+  <script>
+  (function () {
+    const yanitAlani   = document.getElementById('yanit-alani');
+    const mesajGirisi  = document.getElementById('mesaj-girisi');
+    const sorButonu    = document.getElementById('sor-butonu');
+    const leadFormu    = document.getElementById('lead-formu');
+    const isimGirisi   = document.getElementById('isim-girisi');
+    const telefonGirisi= document.getElementById('telefon-girisi');
+    const hizmetSecimi = document.getElementById('hizmet-alani-secimi');
+
+    // Sohbet geçmişi — her tur backend'e gönderilir
+    const gecmis = [];
+
+    // ---- POST /api/sohbet ---------------------------------------------
+    sorButonu.addEventListener('click', async function () {
+      const mesaj = mesajGirisi.value.trim();
+      if (!mesaj) {
+        yanitAlani.textContent = 'Lutfen once bir soru yazin.';
+        return;
+      }
+
+      sorButonu.disabled = true;
+      sorButonu.textContent = 'Yanit hazirlaniyor...';
+      yanitAlani.textContent = '';
+
+      try {
+        const istek = await fetch('/api/sohbet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mesaj: mesaj, gecmis: gecmis })
+        });
+        const veri = await istek.json();
+
+        if (veri.basari) {
+          yanitAlani.textContent = veri.cevap;
+          gecmis.push({ role: 'user', content: mesaj });
+          gecmis.push({ role: 'assistant', content: veri.cevap });
+          mesajGirisi.value = '';
+        } else {
+          yanitAlani.textContent = veri.hata || 'Beklenmeyen bir hata olustu.';
+        }
+      } catch (hata) {
+        yanitAlani.textContent = 'Sunucuya ulasilamadi: ' + hata.message;
+      } finally {
+        sorButonu.disabled = false;
+        sorButonu.textContent = 'Sor';
+      }
+    });
+
+    // ---- POST /api/leads ----------------------------------------------
+    leadFormu.addEventListener('submit', async function (olay) {
+      olay.preventDefault();
+
+      const kaydetButonu = document.getElementById('kaydet-butonu');
+      const gonderilecek = {
+        isim: isimGirisi.value.trim(),
+        telefon: telefonGirisi.value.trim(),
+        mesaj: mesajGirisi.value.trim(),
+        hizmet_alani: hizmetSecimi.value
+      };
+
+      if (!gonderilecek.isim || !gonderilecek.telefon) {
+        yanitAlani.textContent = 'Isim ve telefon zorunludur.';
+        return;
+      }
+
+      kaydetButonu.disabled = true;
+      kaydetButonu.textContent = 'Kaydediliyor...';
+
+      try {
+        const istek = await fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(gonderilecek)
+        });
+        const veri = await istek.json();
+
+        if (veri.basari) {
+          yanitAlani.textContent = 'Tesekkurler! Bilgileriniz kaydedildi, en kisa surede donus yapacagiz.';
+          leadFormu.reset();
+        } else {
+          yanitAlani.textContent = veri.hata || 'Kayit sirasinda bir hata olustu.';
+        }
+      } catch (hata) {
+        yanitAlani.textContent = 'Sunucuya ulasilamadi: ' + hata.message;
+      } finally {
+        kaydetButonu.disabled = false;
+        kaydetButonu.textContent = 'Kaydet';
+      }
+    });
+  })();
+  </script>
+
+</body>
+</html>
