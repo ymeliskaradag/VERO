@@ -24,10 +24,6 @@ VERO'ya özel tablo şeması (leads):
   vermesi nedeniyle eklenen özelleştirilmiş sütundur — satış ekibinin
   lead'i doğru uzmana yönlendirmesini sağlar.
 
-Güvenlik zorunluluğu: lead_ekle içinde değerleri SQL metnine doğrudan
-eklemeyin — ? yer tutucusu ve ayrı parametre kullanın (SQL Injection
-koruması). Örn: cursor.execute("INSERT INTO leads (...) VALUES (?, ?, ?, ?)", (isim, telefon, mesaj, hizmet_alani))
-
 Kontrol noktası: Modül F'de bir kayıt ekleyip listeleyebiliyorsanız
 tamamdır.
 """
