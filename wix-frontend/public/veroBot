@@ -1,0 +1,186 @@
+import { botaSor, leadKaydet } from 'backend/veroBot.web';
+ 
+// ---- Element ID'leri ------------------------------------------------------
+const ID = {
+  // sohbet
+  panel:   '#box291',      // container 
+  ac:      '#button20',         // açma butonu
+  kapat:   '#button20',      // kapatma - opsiyonel
+  akis:    '#textBox1',       // konuşmanın yazıldığı Text
+  giris:   '#textBox2',      // Text Input
+  gonder:  '#button21',     // gönder butonu
+  durum:   '#botDurum',      // "yazıyor…" - opsiyonel
+ 
+  leadKutu:    '#leadKutu',      // container 
+  leadIsim:    '#leadIsim',      // Text Input
+  leadTelefon: '#leadTelefon',   // Text Input
+  leadGonder:  '#leadGonder',    // buton
+  leadSonuc:   '#leadSonuc'      // Text 
+};
+// ---------------------------------------------------------------------------
+ 
+const RENK = {
+  kullanici: '#00D4D5',
+  bot:       '#E7ECED',
+  etiket:    '#A4B1B3'
+};
+ 
+const ACILIS = 'Merhaba, ben VERO asistanıyım. Yazılım geliştirme ve siber güvenlik hizmetlerimiz hakkında sorularınızı yanıtlayabilirim.';
+ 
+// Kaçıncı turdan sonra lead formu görünsün
+const LEAD_ESIGI = 2;
+ 
+let gecmis = [];      
+let mesgul = false;
+let leadGosterildi = false;
+ 
+function bul(secici) {
+  try {
+    const e = $w(secici);
+    return (e && e.id) ? e : null;
+  } catch (err) {
+    return null;
+  }
+}
+ 
+function kacir(s) {
+  return String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/\n/g, '<br>');
+}
+ 
+function ciz() {
+  const akis = bul(ID.akis);
+  if (!akis) { console.error('VERO bot · akış metni yok:', ID.akis); return; }
+ 
+  const satirlar = gecmis.map((m) => {
+    const kim  = m.role === 'user' ? 'SİZ' : 'VERO';
+    const renk = m.role === 'user' ? RENK.kullanici : RENK.bot;
+    return `<p style="margin:0 0 14px 0; line-height:1.55;">
+      <span style="color:${RENK.etiket}; font-size:11px; letter-spacing:.08em;">${kim}</span><br>
+      <span style="color:${renk};">${kacir(m.content)}</span>
+    </p>`;
+  });
+ 
+  akis.html = `<div>${satirlar.join('')}</div>`;
+}
+ 
+function durumYaz(yazi) {
+  const d = bul(ID.durum);
+  if (!d) return;
+  if (yazi) { d.text = yazi; d.show(); } else { d.hide(); }
+}
+ 
+function leadFormunuAc() {
+  if (leadGosterildi) return;
+  const kutu = bul(ID.leadKutu);
+  if (!kutu) return;
+  leadGosterildi = true;
+  try { kutu.show(); } catch (e) {}
+}
+ 
+/* --- sohbet --------------------------------------------------------------- */
+async function gonder() {
+  if (mesgul) return;
+ 
+  const giris = bul(ID.giris);
+  if (!giris) { console.error('VERO bot · giriş kutusu yok:', ID.giris); return; }
+ 
+  const soru = String(giris.value || '').trim();
+  if (!soru) return;
+ 
+  mesgul = true;
+  giris.value = '';
+ 
+  const oncekiGecmis = gecmis.slice();   // sunucuya bu mesaj hariç gider
+  gecmis.push({ role: 'user', content: soru });
+  ciz();
+  durumYaz('VERO yazıyor…');
+ 
+  const btn = bul(ID.gonder);
+  if (btn) { try { btn.disable(); } catch (e) {} }
+ 
+  try {
+    const sonuc = await botaSor(soru, oncekiGecmis);
+    gecmis.push({ role: 'assistant', content: sonuc.cevap });
+    if (sonuc.demo) console.warn('VERO bot · demo modunda çalışıyor (anahtar yok).');
+  } catch (e) {
+    console.error('VERO bot ·', e);
+    gecmis.push({
+      role: 'assistant',
+      content: 'Yapay zeka servisine şu anda ulaşılamıyor. Lütfen biraz sonra tekrar deneyin ya da info@vero.com.tr adresinden bize yazın.'
+    });
+  } finally {
+    durumYaz('');
+    ciz();
+    if (btn) { try { btn.enable(); } catch (e) {} }
+    mesgul = false;
+ 
+    const turSayisi = gecmis.filter((m) => m.role === 'user').length;
+    if (turSayisi >= LEAD_ESIGI) leadFormunuAc();
+  }
+}
+ 
+/* --- lead ----------------------------------------------------------------- */
+async function leadiGonder() {
+  const isimEl = bul(ID.leadIsim);
+  const telEl  = bul(ID.leadTelefon);
+  const sonucEl = bul(ID.leadSonuc);
+ 
+  const yaz = (t) => { if (sonucEl) { sonucEl.text = t; sonucEl.show(); } };
+ 
+  if (!isimEl || !telEl) { console.error('VERO bot · lead alanları eksik.'); return; }
+ 
+  const isim = String(isimEl.value || '').trim();
+  const tel  = String(telEl.value || '').trim();
+ 
+  if (!isim || !tel) { yaz('İsim ve telefon zorunludur.'); return; }
+ 
+  const btn = bul(ID.leadGonder);
+  if (btn) { try { btn.disable(); } catch (e) {} }
+ 
+  // Sohbetin özeti kayda iliştirilir; ham konuşma saklanmaz.
+  const ozet = gecmis
+    .filter((m) => m.role === 'user')
+    .map((m) => '· ' + m.content)
+    .join('\n')
+    .slice(0, 2000);
+ 
+  try {
+    await leadKaydet(isim, tel, ozet || 'Sohbet üzerinden iletişim talebi.', '');
+    yaz('Teşekkürler. En kısa sürede size dönüş yapacağız.');
+    isimEl.value = '';
+    telEl.value = '';
+  } catch (e) {
+    console.error('VERO bot · lead kaydedilemedi:', e);
+    yaz('Kaydedilemedi. Lütfen tekrar deneyin.');
+  } finally {
+    if (btn) { try { btn.enable(); } catch (e) {} }
+  }
+}
+ 
+/* --- kurulum -------------------------------------------------------------- */
+export function botuKur() {
+ 
+  console.log('VERO bot · kuruluyor…');
+ 
+  gecmis = [{ role: 'assistant', content: ACILIS }];
+  ciz();
+  durumYaz('');
+ 
+  const btn = bul(ID.gonder);
+  if (btn) btn.onClick(gonder);
+  else console.error('VERO bot · gönder butonu yok:', ID.gonder);
+ 
+  const giris = bul(ID.giris);
+  if (giris) giris.onKeyPress((olay) => { if (olay.key === 'Enter') gonder(); });
+ 
+  const panel = bul(ID.panel);
+  const ac    = bul(ID.ac);
+  const kapat = bul(ID.kapat);
+  if (panel && ac)    ac.onClick(() => { panel.show(); const g = bul(ID.giris); if (g) g.focus(); });
+  if (panel && kapat) kapat.onClick(() => panel.hide());
+ 
+  const leadBtn = bul(ID.leadGonder);
+  if (leadBtn) leadBtn.onClick(leadiGonder);
+}

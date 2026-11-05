@@ -1,0 +1,7 @@
+.readable_tags .selection-tags__option {
+  letter-spacing: 0.05em;
+}
+
+.custom_tag_padding .selection-tags__option {
+  padding: 0.5em 1em;
+}
