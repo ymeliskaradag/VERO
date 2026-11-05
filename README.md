@@ -6,6 +6,10 @@ VERO SmartLead AI, VERO'nun web sitesi için geliştirilen yapay zeka destekli s
 
 VERO; mevcut markalara ve bireylere yönelik yazılım geliştirme ve siber güvenlik danışmanlığı sunan, tamamen dijital çalışan bir markadır.
 
+## Proje Yapısı
+- `app/` — Flask ile yazılmış sohbet asistanı backend'i (Render'da çalışır)
+- `wix-frontend/` — Wix Studio üzerinde geliştirilen sitenin ön yüz kodları (yalnızca inceleme amaçlı kopya; site Wix üzerinde yayında)
+
 <p align="center">
   <img src="screenshots/ekran1.png" width="32%" alt="Ekran 1" />
   <img src="screenshots/ekran2.png" width="32%" alt="Ekran 2" />
