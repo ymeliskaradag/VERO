@@ -6,6 +6,17 @@ VERO SmartLead AI, VERO'nun web sitesi için geliştirilen yapay zeka destekli s
 
 VERO; mevcut markalara ve bireylere yönelik yazılım geliştirme ve siber güvenlik danışmanlığı sunan, tamamen dijital çalışan bir markadır.
 
+<p align="center">
+  <img src="screenshots/ekran1.png" width="32%" alt="Ekran 1" />
+  <img src="screenshots/ekran2.png" width="32%" alt="Ekran 2" />
+  <img src="screenshots/ekran3.png" width="32%" alt="Ekran 3" />
+</p>
+<p align="center">
+  <img src="screenshots/ekran4.png" width="32%" alt="Ekran 4" />
+  <img src="screenshots/ekran5.png" width="32%" alt="Ekran 5" />
+  <img src="screenshots/ekran6.png" width="32%" alt="Ekran 6" />
+</p>
+
 ## Özellikler
 
 - Groq altyapısıyla çalışan Türkçe sohbet asistanı
